@@ -214,37 +214,154 @@ GPIO.output(channel, LOW)		# 출력 핀을 LOW (0V)
 ### 파이썬 가상환경 설정
 - 가상환경 생성
 ```shell
-    raspi@raspberrypi:~/PiSrc $ python -m venv --system-site-package env
+raspi@raspberrypi:~/PiSrc $ python -m venv --system-site-package env
 ```
-    <br>
+<br>
+
 - 가상환경 활성화
-    ```shell
-    raspi@raspberrypi:~/PiSrc $ ls
-    env  hello.py  led.py
-    raspi@raspberrypi:~/PiSrc $ cd env
-    raspi@raspberrypi:~/PiSrc/env $ cd bin
-    raspi@raspberrypi:~/PiSrc/env/bin $ ls
-    Activate.ps1  activate.csh   pip   pip3.11  python3
-    activate      activate.fish  pip3  python   python3.11
-    raspi@raspberrypi:~/PiSrc/env/bin $ source activate
-    ```
+```shell
+raspi@raspberrypi:~/PiSrc $ ls
+env  hello.py  led.py
+raspi@raspberrypi:~/PiSrc $ cd env
+raspi@raspberrypi:~/PiSrc/env $ cd bin
+raspi@raspberrypi:~/PiSrc/env/bin $ ls
+Activate.ps1  activate.csh   pip   pip3.11  python3
+activate      activate.fish  pip3  python   python3.11
+raspi@raspberrypi:~/PiSrc/env/bin $ source activate
+```
 <br>
 
 - 파일 생성 및 수정
 ```shell
-    (env) raspi@raspberrypi:~/PiSrc $ nano button.py
+(env) raspi@raspberrypi:~/PiSrc $ nano button.py
 ```
-    -> 가상환경에서는 (가상환경이름) 뜸
+-> 가상환경에서는 (가상환경이름) 뜸
 <br>
 
 - 실행
 ```shell
-    (env) raspi@raspberrypi:~/PiSrc $ python button.py
+(env) raspi@raspberrypi:~/PiSrc $ python button.py
 ``` 
-    -> python 파일명
+-> python 파일명
 <br>
+
 - 가상환경 비활성화
 
 ```shell
-    (env) raspi@raspberrypi:~/PiSrc/env/bin $ deactivate
+(env) raspi@raspberrypi:~/PiSrc/env/bin $ deactivate
 ```
+
+<br>
+
+#### PuTTY 글꼴 변경
+PuTTY 열기 (PuTTY Configuration) > Session > 설정할 session 선택 > load >
+좌측 Appearance 에서 글꼴 지정 > Open
+
+## 3일차
+### 온습도 센서 연결
+##### 🔌 하드웨어 연결
+**온습도 센서 모델: DHT11**
+|DHT11 핀|라즈베리파이 핀|기능|
+|------|---------------|----|
+|S|GPIO 2|데이터 신호 송수신|
+|VCC|3.3V|전원 공급|
+|GND|GND|접지(그라운드)|
+
+- 회로 구성도
+<img src="./image/0009.png">
+
+
+##### ⚡ 전기적 동작
+- 데이터 통신: 단일 버스 디지털 통신 방식
+- 신호 특성:
+    - HIGH: 3.3V (데이터 '1' 또는 유휴 상태)
+    - LOW: 0V (데이터 '0' 또는 시작 신호)
+- 통신 프로토콜
+    ```
+    시작신호 → 응답신호 → 40비트 데이터 전송 → 체크섬 검증
+    ```
+##### 📝 주요 특징
+- 측정 범위:
+    - 습도: 20~90% RH (±5% 정확도)
+    - 온도: 0~50°C (±2°C 정확도)
+
+### 온습도 센서 감지시 DB 저장
+
+#### mysql 관련 패키지 설치
+- MySQL 서버 설치
+```shell
+sudo apt update
+sudo apt install mysql-server
+```
+- MySQL 서비스 시작
+```shell
+sudo systemctl start mysql
+```
+- 접속
+```shell
+sudo mysql -u root -p
+```
+#### 사용자 생성 및 권한 부여
+- 유저 추가
+```shell
+create user '유저명'@'%'identified by '비밀번호';
+flush privileges;
+```
+-> % : 외부 시스템에서 접근 가능
+
+- 데이터베이스 및 테이블 생성
+```shell
+create database [테이블명]
+use [테이블명]
+CREATE TABLE [테이블명]([테이블형식]);
+```
+
+- test 유저에게 권한 부여
+```shell
+GRANT ALL PRIVILEGES ON *.* TO 'test'@'%' WITH GRANT OPTION;
+flush privileges;
+exit
+```
+#### mysql 재시작
+```shell
+sudo service mysql restart
+```
+
+#### 추가할 파이썬 라이브러리 설치
+```shell
+pip install mysql-connector-python
+```
+-> 가상환경에서 설치해야 함!
+
+#### 파이썬 코드 추가 (DB 연결)
+```python
+# DB import
+import mysql.connector
+
+....
+# DB 연결
+conn = mysql.connector.connect(
+    host="localhost",
+    user="test",          # 만든 사용자
+    password="",       # 해당 사용자 비밀번호
+    database="test_db"
+)
+cursor = conn.cursor()
+
+...
+
+# DB에 데이터 삽입
+sql = "INSERT INTO tempHumData (temp, humid) VALUES (%s, %s)"
+val = (temperature, humidity)
+cursor.execute(sql, val)
+conn.commit()
+```
+- 결과
+<img src="./image/0008.png" width="400">
+
+
+
+
+
+
+
