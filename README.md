@@ -1,75 +1,74 @@
 # iot-raspi-2025
 
-## 1일차
-### 기본 설정
-공유기 연결 후 인터넷 창 - 192.168.0.1 접속
-- 기존 PC의 ip주소 입력 및 기본 설정
+## 📅 1일차: 기본 설정
+### ✨ 공유기 연결
+- 인터넷 창 연결: 192.168.0.1 입력 ▶ 기존 PC IP정보로 가속 설정
 
-### 설치
-- raspberry Pi Imager (https://www.raspberrypi.com/software/) 
+### 💾 설치 필수 프로그램
+- [raspberry Pi Imager](https://www.raspberrypi.com/software/) 
     > Download for Windows
-- RealVNC (https://www.realvnc.com/en/connect/download/viewer/?lai_vid=8rnEvy4v2CBa3&lai_sr=0-4&lai_sl=l)
-- SD Card Formatter (https://www.sdcard.org/downloads/formatter/sd-memory-card-formatter-for-windows-download/)
+- [RealVNC](https://www.realvnc.com/en/connect/download/viewer/?lai_vid=8rnEvy4v2CBa3&lai_sr=0-4&lai_sl=l)
+- [SD Card Formatter](https://www.sdcard.org/downloads/formatter/sd-memory-card-formatter-for-windows-download/)
     > Accept
     - sd 카드 포맷용으로 사용 (라즈베리파이 오류 시 시행)
 
-#### raspberry Pi Imager 
-1. 라즈베리파이디바이스 선택(버전 확인)
-2. 운영체제 선택(Raspberry pi os (64-bit))
-3. 저장소 선택 (pc에 연결한 sd 카드 선택)
+### 📀 Raspberry Pi Imager 사용 방법
+1. Raspberry Pi 버전 선택 (ex. Pi 4, Pi 5)
+2. OS 선택: `Raspberry Pi OS (64-bit)`
+3. 저장소 선택: 연결한 SD 카드
 
 #### 공유기 - raspberrypi 연결
-1. 유선 LAN 연결 (raspberrypi - 공유기)
-2. 모니터 연결 (raspberrypi - 모니터)
-3. 키보드, 마우스 연결 (raspberrypi - 키보드/마우스)
-4. raspberrypi 배경화면 > 우측 상단 인터넷 아이콘 클릭 > 연결할 공유기 찾기 > 아이디/비번 넣고 연결
-5. restart (후에도 연결되어 있는지 확인)
-6. 네트워크 매니저 창에 raspberrypi 연결되어 있는지 확인
+1. Raspberry Pi 가 공유기에 LAN 연결
+2. 모니터, 키보드, 마우스 연결
+3. raspberrypi 배경화면 > 우측 상단 인터넷 아이콘 클릭 > 연결할 공유기 찾기 > 아이디/비번 넣고 연결
+4. restart (후에도 연결되어 있는지 확인)
+5. 네트워크 매니저 창에 raspberrypi 연결되어 있는지 확인
 
-#### PUTTY
+### ⚡ PUTTY 연결
 1. Host Name : raspberrt.local(네트워크 매니저에서 확인한 raspberrypi ip 입력)
 2. Port : 22
 3. Saved Sessions : raspi
 3. save -> load -> open
 4. 터미널에서 명령어 실행
-```shell
+    ```shell
     sudo apt update
     sudo apt upgrade -y
     sudo reboot now
-```
+    ```
 5. 창 상단 우클릭 > Changed Sessions > restart Sessions
 6. vnc 활성화
-```shell
+    ```shell
     vncserver-virtual
     sudo raspi-config 
-```
-7. 화면 출력 시 3. Interface Options > I3 VNC > Yes > Finish
+    ```
+7. 화면 출력 시 `3.Interface Options > I3 VNC > Yes > Finish`
 
-#### RealVNC
-1. 실행 후 raspberrypi 입력
-2. 이름/비번 : raspi/raspi
+### 🌐 VNC Viewer
+* `vncserver-virtual`
+* `sudo raspi-config` ▶ `Interface Options > VNC > Enable`
+* RealVNC Viewer에 raspberrypi.local 입력 ▶ ID/PW: `raspi / raspi`
 
-##### 한글 설정
+#### 한글 설정
 1. vnc뷰어에서 raspberrypi 아이콘 클릭 > raspberrypi configuration > localiziation 으로 이동
 2. location - ko(korean), KR, UTF-8로 변경
 3. Timezone - Asia, Seoul로 변경
 4. 터미널에서 명령어 실행
-```shell
+    ```bash
     sudo apt install fonts-nanum fonts-nanum-extra   #나눔 폰트 설치
     sudo apt install fonts-unfonts-core   #폰트 등록
     sudo reboot now
     sudo raspi-config # vnc 활성화
-```
+    ```
 
-#### 라즈베리파이 Shared 파일 설치
+### 📝 Shared 파일 설정
 1. 터미널에서 명령어 실행
-```shell
+    ```bash
     sudo apt install samba samba-common-bin
     sudo mkdir -p /home/pi/share
     sudo nano /etc/samba/smb.conf
-```
+    ```
 2. 편집기에서 가장 마지막 줄에 추가
-```nano
+    ```ini
     [share]
     path = /home/pi/share
     writeable = yes
@@ -77,30 +76,27 @@
     directory mask = 0777
     public = yes
     guest ok = yes
-```
+    ```
 3. samba restart
-```shell
+    ```bash
     sudo systemctl restart smbd
-```
-4. 권한 오류 발생
-```shell
+    ```
+4. 권한 오류 발생 -> 모든 사용자에게 권한 부여
+    ```bash
     sudo chmod -R 777 /home/pi/share
-```
--> 모든 사용자에게 권한 부여
-
-5. 윈도우파일탐색기 > 라즈베리파이의 ip주소 입력
+    ```
+▶ Windows에서 `\\<raspberrypi-ip>` 입력
 
 
 #### 라즈베리 설정
 - 편집기 열어서 수정
-```shell
+    ```bash
     sudo nano /etc/nanorc
-```
+    ```
 - 주석 해제 
 	- set autoindent
 	- set linenumbers
 	- set tabsize 4
-
 
 #### 명령어
 |명령어|설명|
@@ -116,18 +112,22 @@
 . : 현재 디렉터리
 .. : 상위 디렉터리
 
+#### PuTTY 글꼴 변경
+`PuTTY 열기 (PuTTY Configuration) > Session > 설정할 session 선택 > load >
+좌측 Appearance 에서 글꼴 지정 > Open`
+<br>
 
-## 2일차
-
-### RPI.GPIO 모듈
+## 📅 2일차: GPIO 경우 & LED
+### ⚡ GPIO 기본
+```python
 GPIO.setmode(GPIO.BOARD)		# WPI (물리적 핀 번호 사용)
-GPIO.setmode(GPIO.BCM)		# BCM (GPIO 번호 사용)
+GPIO.setmode(GPIO.BCM)		    # BCM (GPIO 번호 사용)
 GPIO.setup(channel, GPIO.IN)  	# 입력으로 설정 (ex 버튼)
-GPIO.setup(channel, GPIO.OUT)    # 출력으로 설정 (ex led)
-GPIO.cleanup()				# 모든 핀 초기화
+GPIO.setup(channel, GPIO.OUT)   # 출력으로 설정 (ex led)
+GPIO.cleanup()				    # 모든 핀 초기화
 GPIO.output(channel, HIGH)		# 출력 핀을 HIGH (3.3V)
 GPIO.output(channel, LOW)		# 출력 핀을 LOW (0V)
-
+```
 ### VCC vs GND
 | 구분        | 역할               | 예시                            |
 | --------- | ---------------- | ----------------------------- |
@@ -153,9 +153,8 @@ GPIO.output(channel, LOW)		# 출력 핀을 LOW (0V)
 <img src="./image/0007.png" width="500">
 
 
-### RGB LED 연결
-##### 🔌 하드웨어 연결
-**RGB LED 모델: CNT1**
+## 🌟 RGB LED (CNT1)
+### 🔌 하드웨어 연결
 |LED 핀|라즈베리파이 핀|기능|
 |------|---------------|----|
 |CNT1 -|GND|공통 캐소드 (음극)|
@@ -174,9 +173,8 @@ GPIO.output(channel, LOW)		# 출력 핀을 LOW (0V)
 - [RGB LED 코드](./day02/led.py)
 
 
-### 스위치 버튼 연결
-##### 🔌 하드웨어 연결
-**스위치 버튼 모델: S1**
+## ⏰ 스위치 & 버튼(S1)
+### 🔌 하드웨어 연결
 |버튼 핀|라즈베리파이 핀|기능|
 |------|---------------|----|
 |S|GPIO 17|신호 출력(버튼 상태 감지)|
@@ -196,9 +194,9 @@ GPIO.output(channel, LOW)		# 출력 핀을 LOW (0V)
         3.3V ----[풀업저항]---- GPIO 17 ---- (버튼 닫힘) ---- GND (0V)
         ```
 
-[스위치 버튼 코드](./day02/button.py)
+        [소스 코드](./day02/button.py)
 
-**🔄 동작 순서**
+#### 🔄 동작 순서
 1. 평상시: S핀이 3.3V와 연결되어 HIGH(1)
 2. 버튼 누름: GND와 직접 연결 LOW(0)
 3. 버튼 뗌: 다시 풀다운 저항으로 HIGH
@@ -211,55 +209,50 @@ GPIO.output(channel, LOW)		# 출력 핀을 LOW (0V)
 - 다섯번 누르면 RESET
 [구현 코드](./day02/button1.py)
 
-### 파이썬 가상환경 설정
+## 💊 가상환경
 - 가상환경 생성
-```shell
-raspi@raspberrypi:~/PiSrc $ python -m venv --system-site-package env
-```
+    ```bash
+    raspi@raspberrypi:~/PiSrc $ python -m venv --system-site-package env
+    ```
 <br>
 
 - 가상환경 활성화
-```shell
-raspi@raspberrypi:~/PiSrc $ ls
-env  hello.py  led.py
-raspi@raspberrypi:~/PiSrc $ cd env
-raspi@raspberrypi:~/PiSrc/env $ cd bin
-raspi@raspberrypi:~/PiSrc/env/bin $ ls
-Activate.ps1  activate.csh   pip   pip3.11  python3
-activate      activate.fish  pip3  python   python3.11
-raspi@raspberrypi:~/PiSrc/env/bin $ source activate
-```
+    ```bash
+    raspi@raspberrypi:~/PiSrc $ ls
+    env  hello.py  led.py
+    raspi@raspberrypi:~/PiSrc $ cd env
+    raspi@raspberrypi:~/PiSrc/env $ cd bin
+    raspi@raspberrypi:~/PiSrc/env/bin $ ls
+    Activate.ps1  activate.csh   pip   pip3.11  python3
+    activate      activate.fish  pip3  python   python3.11
+    raspi@raspberrypi:~/PiSrc/env/bin $ source activate
+    ```
 <br>
 
 - 파일 생성 및 수정
-```shell
-(env) raspi@raspberrypi:~/PiSrc $ nano button.py
-```
--> 가상환경에서는 (가상환경이름) 뜸
+    ```bash
+    (env) raspi@raspberrypi:~/PiSrc $ nano button.py
+    ```
+    ` -> 가상환경에서는 (가상환경이름) 뜸`
 <br>
 
 - 실행
-```shell
-(env) raspi@raspberrypi:~/PiSrc $ python button.py
-``` 
--> python 파일명
+    ```bash
+    (env) raspi@raspberrypi:~/PiSrc $ python button.py
+    ``` 
+    `-> python 파일명`
 <br>
 
 - 가상환경 비활성화
-
-```shell
-(env) raspi@raspberrypi:~/PiSrc/env/bin $ deactivate
-```
-
+    ```bash
+    (env) raspi@raspberrypi:~/PiSrc/env/bin $ deactivate
+    ```
 <br>
 
-#### PuTTY 글꼴 변경
-PuTTY 열기 (PuTTY Configuration) > Session > 설정할 session 선택 > load >
-좌측 Appearance 에서 글꼴 지정 > Open
 
-## 3일차
-### 온습도 센서 연결
-##### 🔌 하드웨어 연결
+## 📅 3일차: DHT11 온습도 설치 & DB
+### 🪨 온습도 선서 (DHT11)
+#### 🔌 하드웨어 연결
 **온습도 센서 모델: DHT11**
 |DHT11 핀|라즈베리파이 핀|기능|
 |------|---------------|----|
@@ -270,6 +263,10 @@ PuTTY 열기 (PuTTY Configuration) > Session > 설정할 session 선택 > load >
 - 회로 구성도
 <img src="./image/0009.png">
 
+#### 온습도센서 패키지 설치
+```bash
+pip install adafruit-circuitpython-dht
+```
 
 ##### ⚡ 전기적 동작
 - 데이터 통신: 단일 버스 디지털 통신 방식
@@ -289,43 +286,50 @@ PuTTY 열기 (PuTTY Configuration) > Session > 설정할 session 선택 > load >
 
 #### mysql 관련 패키지 설치
 - MySQL 서버 설치
-```shell
-sudo apt update
-sudo apt install mysql-server
-```
+    ```bash
+    sudo apt update
+    sudo apt install mariadb-server
+    ```
 - MySQL 서비스 시작
-```shell
-sudo systemctl start mysql
-```
+    ```bash
+    sudo systemctl start mysql
+    ```
 - 접속
-```shell
-sudo mysql -u root -p
-```
+    ```bash
+    sudo mysql -u root -p
+    ```
 #### 사용자 생성 및 권한 부여
 - 유저 추가
-```shell
-create user '유저명'@'%'identified by '비밀번호';
-flush privileges;
-```
--> % : 외부 시스템에서 접근 가능
+    ```shell
+    create user '유저명'@'%'identified by '비밀번호';
+    flush privileges;
+    ```
+    `-> % : 외부 시스템에서 접근 가능`
 
 - 데이터베이스 및 테이블 생성
-```shell
-create database [테이블명]
-use [테이블명]
-CREATE TABLE [테이블명]([테이블형식]);
-```
+    ```shell
+    create database [테이블명]
+    use [테이블명]
+    CREATE TABLE [테이블명]([테이블형식]);
+    ```
 
 - test 유저에게 권한 부여
-```shell
-GRANT ALL PRIVILEGES ON *.* TO 'test'@'%' WITH GRANT OPTION;
-flush privileges;
-exit
-```
+    ```shell
+    GRANT ALL PRIVILEGES ON *.* TO 'test'@'%' WITH GRANT OPTION;
+    flush privileges;
+    exit
+    ```
 #### mysql 재시작
 ```shell
 sudo service mysql restart
 ```
+
+#### 라즈베리 파이 외부에서 접속허용하기
+```shell
+sudo nano /etc/mysql/mariadb.conf.d/50-server.cnf
+```
+`bind-address = 127.0.0.1 -> 주석 처리`
+
 
 #### 추가할 파이썬 라이브러리 설치
 ```shell
@@ -359,9 +363,100 @@ conn.commit()
 - 결과
 <img src="./image/0008.png" width="400">
 
+<br>
+
+## 📅 4일차: PyQt5 UI
+### 🧪 실행 환경
+- Python 3.x
+- PyQt5
+
+### 🔖 가상 화면 설치
+```shell
+sudo apt install python3-pyqt5
+```
+-> 기본적으로 설치되어 있음
+
+#### tools 설치
+```shell
+sudo apt install qttools5-dev-tools
+```
+
+##### 🧠 코드 설명
+|코드|설명|
+|----|----|
+|QApplication(sys.argv)	|애플리케이션 객체를 생성하여 이벤트 루프를 초기화|
+|QPushButton("Quit")|텍스트가 "Quit"인 버튼 생성|
+|label.show()|버튼 위젯을 화면에 표시|
+|app.exec()|이벤트 루프 실행 (사용자가 창을 종료할 때까지 대기)|
+
+#### 실행 결과
+- 윈도우창 버튼 띄우기
+<img src="./image/0012.png">
+
+    [소스코드](./day04/pyqtTest.py)
+- 윈도우창 이름 지정
+<img src="./image/0011.png">
+
+    [소스코드](./day04/pyqtTest1.py)
 
 
+### Qt Designer 로 UI 생성 → .py에서 로드
+#### 📂 파일 구성
+
+| 파일명         | 설명 |
+|----------------|------|
+| `pyDesigner1.py` | `.ui` 파일을 로드하여 실행하는 Python 스크립트 |
+| `desi1.ui`      | Qt Designer로 제작된 UI 파일 (예: 버튼, 입력창 등 배치됨) |
+
+    ```
+    생성 > Widget Box 위치 시키기 > Edit Signals/Slots > 버튼 누른 상태로 드래그 후 떼기 >
+    해당 버튼에 Form(QWidget) Edit > Slots 추가 > 파일 저장 (동일한 폴더에 있어야 함)
+    ```
+
+#### 주의사항
+- 파일 생성 후 VNC Viewer에서 실행시켜야 함!!!
+`    VNC Viewer에서 터미널 오픈 > 가상환경 실행`
+    ```bash
+    > source PiSrc/env/bin/activate
+    > python pyqtTest.py (파일 실행시키기)
+    ``` 
+
+#### 실행결과
+- 버튼 비활성화
+    ```python
+    def buttonSlot(self): pass
+    ```
+
+- 버튼 클릭시 print문 출력
+<img src="./image/0013.png" width="300">
+[소스코드](./day04/pyDesigner1.py)
 
 
+- 버튼 클릭에 따른 문자 label에 출력
+<img src="./image/0014.png" width="300">
+[소스코드](./day04/pyDesigner3.py)
+
+
+#### LED CONTROL 하는 UI 생성
+- 기능
+    - 각 색상에 해당하는 버튼을 누를 경우 해당 LED 켜짐
+    - 하단의 버튼 클릭시 모든 색 함께 제어
+
+<table>
+    <tr align="center">
+        <td>전체 조명 제어</td>
+        <td>각 조명별 제어</td>
+        <td>조명 결합</td>
+    </tr>
+</td>
+    <tr>
+        <td><img src="./image/0015.png"></td>
+        <td><img src="./image/0016.png"></td>
+        <td>
+            <img src="./image/0017.png"><br>
+            -> RED + GREEN => YELLO LED 
+        </td>        
+    </tr>
+</table>
 
 
