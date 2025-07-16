@@ -879,3 +879,86 @@ GPIO3과 같은 특별한 핀은 피하기!
 
 
 [소스코드](./day07_test/test.c)
+
+
+
+### 📌 Flask 애플리케이션 생성
+```python
+from flask import Flask
+app = Flask(__name__)
+```
+#### 🌐 라우팅 (Routing)
+- Flask에서 @app.route() 데코레이터를 사용하여 URL과 함수를 연결
+
+#### 기본 라우트 예시
+```python
+@app.route('/')
+def helloflasck():
+    return "Hello World"
+```
+
+##### 📸 예시 화면
+<img src="./image/0020.png" width="400">
+
+📁[소스코드](./Web/appTest.py)
+
+#### 🚀 서버 실행
+```python
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port="5555")
+```
+- `host="0.0.0.0"`: 모든 네트워크 인터페이스에서 접근 가능
+- `port="5555"`: 5555번 포트에서 서버 실행
+- **→ 라즈베리 파이의 IP 주소와 포트를 이용해 외부에서 접근 가능**
+
+    ##### 📸 예시 화면
+    <img src="./image/0023.png" width="400">
+
+    📁[소스코드](./Web/app2.py)
+
+
+#### 💡 동적 라우트 예시 (LED 제어)
+- HTML 응답을 반환하여 LED를 켜고 끄는 예시
+##### 📸 예시 화면
+<img src="./image/0024.png" width="400">
+
+📁[소스코드](./Web/appLed1.py)
+📁[소스코드](./Web/appLed2.py) → state를 받아서 led 제어
+
+
+#### ✅ Flask의 장점
+
+| 항목             | 설명                              |
+| -------------- | ------------------------------- |
+| **간단함**        | 최소한의 코드로 웹 애플리케이션 구축 가능         |
+| **유연성**        | 필요한 확장 기능만 선택적으로 사용 가능          |
+| **Python 친화적** | Python 문법 그대로 웹 개발 가능           |
+| **IoT 적합**     | 라즈베리 파이 등 소형 컴퓨터에서 경량 서버로 사용 가능 |
+
+
+
+#### 💡 동적 라우트 예시 (LED 제어 2)
+- RGB LED를 활용해 해당 색의 LED 켜고 끄기
+- 기본색(Red, Green, Blue) + 색 조합을 활용(Purple, Yellow, White)
+#### 📸 예시 화면
+    
+<img src="./image/0025.png" width="400">
+<img src="./image/0026.png" width="400">
+
+→ 정해진 LED COLOR 이외의 값 입력시 LED OFF
+
+📁[소스코드](./Web/appLed3.py)
+
+#### ❗문제 발생
+- 기존에 켜졌던 색은 끄지 않고 유지됨 -> 색이 섞이거나 계속 켜져 있는 문제 발생
+
+#### ✅ 해결 방법 요약
+- 각 요청이 들어올 때마다 모든 LED를 먼저 끄고, 그 다음에 요청한 색상만 켜기
+```python
+@app.route('/led/<color>')
+def led(color):
+    # 추가
+    GPIO.output(RED, GPIO.LOW)
+    GPIO.output(GREEN, GPIO.LOW)
+    GPIO.output(BLUE, GPIO.LOW)
+```
