@@ -773,9 +773,9 @@ PWM은 ON(1) 상태를 유지하는 시간과 OFF(0) 상태의 비율을 조절�
 - GPIO 입력 핀에 이벤트(신호 변화)가 발생했을 때 자동으로 어떤 동작을 하도록 설정하는 함수
 
 #### 🔍 함수 구조
-    ```python
-    GPIO.add_event_detect(channel, edge, callback=None, bouncetime=0)
-    ```
+```python
+GPIO.add_event_detect(channel, edge, callback=None, bouncetime=0)
+```
 
 #### 🔁 edge 파라미터 설명
 | 파라미터         | 설명                                                                   |
@@ -962,3 +962,119 @@ def led(color):
     GPIO.output(GREEN, GPIO.LOW)
     GPIO.output(BLUE, GPIO.LOW)
 ```
+
+
+
+## 8일차 : 
+### 📌 Flask 애플리케이션 
+#### POST 타입으로 이름/전화번호/이메일 전달하기
+#### 📮 POST 방식이란?
+#### 🔹 1. HTTP 요청 방식 (GET vs POST)
+- 웹에서 데이터를 주고받을 때는 주로 **HTTP 요청 방식(method)**을 사용
+| 요청 방식    | 설명              | 데이터 전송 위치              | 보안성      |
+| -------- | --------------- | ---------------------- | -------- |
+| **GET**  | 데이터를 요청         | URL에 노출됨 (`?name=홍길동`) | 낮음       |
+| **POST** | 데이터를 서버에 **제출** | 본문(body)에 숨겨져 전송       | 상대적으로 높음 |
+
+#### 🔹 2. POST 방식 특징
+- HTML `<form>`에서 사용: 사용자 입력값을 서버에 보낼 때 자주 사용
+- URL에 데이터 노출 ❌: 개인정보(이름, 전화번호 등) 전송에 적합
+- 대용량 데이터 가능: GET보다 많은 양의 데이터 전송 가능
+
+#### 🔹 3. Flask에서 POST 방식 처리
+```python
+@app.route('/submit', methods=['POST'])
+def submit():
+    name = request.form.get('name')
+```
+
+<br>
+
+### 🧩 render_template() 함수
+#### 📂 예시 파일 구조
+```C#
+project/
+├── employer.py
+└── templates/
+    └── add.html
+```
+- 파일명 `templates`는 동일해야 함!!
+
+#### 🔹 1. 역할
+- Flask에서 HTML 파일을 불러와서 웹페이지로 보여주는 함수
+
+#### 🔹 2. 기본 사용법
+``` python
+from flask import render_template
+
+@app.route('/')
+def index():
+    return render_template('add.html')
+```
+#### 📸 예시 화면
+<img src="./image/0027.png" width="300">
+<img src="./image/0028.png" width="300">
+
+📁[소스코드(html)](./day08/templates/add.html)
+📁[소스코드](./day08/employer.py)
+
+### 📌 list를 통해 목록 출력 - Flask에서 Jinja2 문법 사용
+- Flask는 내부적으로 Jinja2라는 템플릿 엔진을 사용해서 Python 변수나 제어문(for, if)을 HTML에 적용할 수 있게 함
+
+### 🔁 예시 설명
+#### 🔸 Python 코드 (Flask 서버 쪽)
+```python
+contacts = []
+
+@app.route('/list')
+def list_contacts():
+    return render_template('list.html', contacts=contacts)
+```
+
+#### 🔸 HTML 템플릿 (list.html)
+```html
+<table border="1">
+    <tr>
+        <th>Name</th><th>Phone</th><th>Email</th>
+    </tr>
+
+    {% for contact in contacts %}
+    <tr>
+        <td>{{ contact.name }}</td>
+        <td>{{ contact.phone }}</td>
+        <td>{{ contact.email }}</td>
+    </tr>
+    {% endfor %}
+</table>
+```
+📁[소스코드](./day08/templates/list.html)
+
+#### 📌 정리
+| 구문                              | 설명                  |
+| ------------------------------- | ------------------- |
+| `{% for contact in contacts %}` | `contacts` 리스트를 반복함 |
+| `{{ contact.name }}`            | 각 연락처의 이름 출력        |
+| `{{ contact.phone }}`           | 각 연락처의 전화번호 출력      |
+| `{{ contact.email }}`           | 각 연락처의 이메일 출력       |
+| `{% endfor %}`                  | 반복문 종료              |
+
+| 문법      | 역할                          |
+| ------- | --------------------------- |
+| `{% %}` | 제어문 (`for`, `if`, `else` 등) |
+| `{{ }}` | 변수 출력                       |
+
+
+#### 📸 예시 화면
+<img src="./image/0029.png">
+
+📁[소스코드](./day08/employer2.py)
+
+
+#### 📸 예시 화면
+<img src="./image/0030.png">
+
+📁[소스코드](./day08/templates/)
+
+<br>
+
+### 수요일 - 프로젝트 제출

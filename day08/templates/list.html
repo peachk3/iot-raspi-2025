@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title >Employee Information</title>
+</head>
+<body>
+    <h2>Employee Information</h2>
+    <table border="1">
+        <tr><th>Name</th><th>Phone</th><th>Email</th></tr>
+        {% for contact in contacts %}       <!--contacts 리스트 반복-->
+        <tr>
+            <td>{{ contact.name }}</td>
+            <td>{{ contact.phone }}</td>
+            <td>{{ contact.email }}</td>
+        </tr>
+        {% endfor %}                        <!-- 반복문 종료 -->
+    </table>
+</body>
+</html>
